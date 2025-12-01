@@ -48,6 +48,7 @@ export default function ChatWidget() {
     e?.preventDefault();
     if (!inputText.trim() || isLoading) return;
 
+    // 1. Создаем объект сообщения пользователя
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputText,
@@ -55,25 +56,33 @@ export default function ChatWidget() {
       timestamp: new Date()
     };
 
+    // 2. Обновляем UI (добавляем сообщение пользователя)
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
 
     try {
-      // Формируем историю чата для контекста
-      const history = messages.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      }));
+      // 3. ФОРМИРУЕМ ИСТОРИЮ ДЛЯ API (ИСПРАВЛЕНИЕ ЗДЕСЬ)
+      // Мы берем текущие сообщения (messages), но УБИРАЕМ приветствие (id: 'welcome')
+      // API требует, чтобы история начиналась с пользователя.
+      const history = messages
+        .filter(msg => msg.id !== 'welcome') // <--- ЭТА СТРОКА РЕШАЕТ ПРОБЛЕМУ
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.text }]
+        }));
 
+      // Запускаем чат с "чистой" историей (без приветствия бота)
       const chat = model.startChat({
         history: history,
       });
 
+      // Отправляем новое сообщение
       const result = await chat.sendMessage(userMessage.text);
       const response = result.response;
       const text = response.text();
 
+      // 4. Добавляем ответ ИИ в UI
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: text,
