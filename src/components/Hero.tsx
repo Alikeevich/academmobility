@@ -6,7 +6,7 @@ import heroBg from '../assets/images/hero-bg.jpg'; // Импорт фона
 
 export default function Hero({ language }: { language: Language }) {
   return (
-    <section className="relative h-[85vh] min-h-[600px] flex items-center bg-uni-secondary overflow-hidden mt-[70px] md:mt-[108px]"
+    <section className="relative h-[85vh] min-h-[600px] flex items-center bg-uni-secondary overflow-hidden mt-[70px] md:mt-[108px]">
       <div className="absolute inset-0 z-0">
         <img 
           src={heroBg} 
