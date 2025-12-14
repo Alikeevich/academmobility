@@ -1,95 +1,145 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChevronLeft, ChevronRight, HelpCircle, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, HelpCircle, CheckCircle2, Play, Pause, Headphones, BookOpen, PenTool, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Language } from '../types/language';
 
-// --- ДАННЫЕ ТЕСТА (Reading Passage) ---
-const READING_PASSAGE = {
-  title: "The Future of Academic Mobility",
-  text: `
-    <p class="mb-4"><strong>Paragraph A</strong></p>
-    <p class="mb-4">International student mobility has become a defining feature of the modern higher education landscape. Over the past three decades, the number of students enrolled in tertiary education outside their country of citizenship has skyrocketed, rising from 0.8 million in 1975 to over 6 million today. This surge is driven by a combination of factors, including the globalization of economies, the desire for intercultural experiences, and government policies aimed at attracting foreign talent.</p>
-    
-    <p class="mb-4"><strong>Paragraph B</strong></p>
-    <p class="mb-4">However, the landscape is shifting. While traditional destinations like the US and UK remain popular, new regional hubs are emerging in Asia and the Middle East. Furthermore, "virtual mobility" – facilitated by digital technologies – is gaining traction as a sustainable alternative to physical travel. This hybrid model allows students to collaborate with peers globally without the financial and environmental costs associated with long-haul flights.</p>
+// --- ТИПЫ ДАННЫХ ---
+type SectionType = 'menu' | 'listening' | 'reading' | 'writing' | 'results';
 
-    <p class="mb-4"><strong>Paragraph C</strong></p>
-    <p class="mb-4">Critics argue that academic mobility can exacerbate "brain drain" in developing nations, where the brightest minds emigrate and rarely return. Conversely, proponents suggest the concept of "brain circulation," where skilled expatriates return home with new expertise and networks, ultimately benefiting their countries of origin. The challenge for universities is to create balanced exchange programs that foster mutual growth rather than one-sided talent extraction.</p>
-  `
+// --- КОНТЕНТ ТЕСТОВ (БАЗА ДАННЫХ) ---
+
+const TEST_DATA = {
+  listening: {
+    title: "Part 1: University Accommodation Enquiry",
+    duration: 1800, // 30 minutes
+    audioMockLength: 300, // симуляция длины аудио трека
+    questions: [
+      {
+        id: 1,
+        type: 'gap_fill',
+        question: "Student Name: Sarah ______",
+        correct: "Parker"
+      },
+      {
+        id: 2,
+        type: 'multiple_choice',
+        question: "Preferred location of the dormitory:",
+        options: ["A. Near the city center", "B. On campus", "C. Near the sports complex"],
+        correct: "B"
+      },
+      {
+        id: 3,
+        type: 'gap_fill',
+        question: "Maximum monthly budget: $______",
+        correct: "600"
+      },
+      {
+        id: 4,
+        type: 'multiple_choice',
+        question: "Special dietary requirement:",
+        options: ["A. Vegetarian", "B. Gluten-free", "C. No specific requirement"],
+        correct: "A"
+      }
+    ]
+  },
+  reading: {
+    title: "The Origins of Coffee Culture",
+    duration: 3600, // 60 minutes
+    text: `
+      <h3 class="font-bold text-xl mb-3">The Origins of Coffee Culture</h3>
+      <p class="mb-4"><strong>Paragraph A</strong></p>
+      <p class="mb-4">The history of coffee dates back to at least the 15th century, although a number of reports and legends suggest its use much earlier. The earliest substantiated evidence of either coffee drinking or knowledge of the coffee tree appears in the middle of the 15th century in the Sufi shrines of Yemen. It was here in Arabia that coffee seeds were first roasted and brewed in a similar way to how it is now prepared. Coffee was originally used by Sufi monks to stay awake during their nightly prayers.</p>
+      
+      <p class="mb-4"><strong>Paragraph B</strong></p>
+      <p class="mb-4">By the 16th century, coffee had reached the rest of the Middle East, Persia, Turkey, and northern Africa. The first coffee seeds were smuggled out of the Middle East by Sufi Baba Budan from Yemen to India. Before this time, all exported coffee was boiled or otherwise sterilized. Portraits of Baba Budan depict him as having smuggled seven coffee seeds by strapping them to his chest. The first plants grown from these smuggled seeds were planted in Mysore.</p>
+
+      <p class="mb-4"><strong>Paragraph C</strong></p>
+      <p class="mb-4">Coffee arrived in Italy in the second half of the 16th century through commercial routes in the Mediterranean. Central European coffee house culture started in Vienna in 1683 after the Battle of Vienna, where bags of coffee beans were left behind by the retreating Ottoman army. From there, it spread to the rest of Europe and eventually to the Americas, becoming one of the most profitable export crops in the world.</p>
+    `,
+    questions: [
+      {
+        id: 1,
+        type: 'true_false',
+        question: "Coffee was first used by Sufi monks to aid in sleep.",
+        options: ["TRUE", "FALSE", "NOT GIVEN"],
+        correct: "FALSE"
+      },
+      {
+        id: 2,
+        type: 'multiple_choice',
+        question: "How did Baba Budan smuggle coffee seeds out of the Middle East?",
+        options: [
+          "A. Hidden in his shoes",
+          "B. Strapped to his chest",
+          "C. Inside a hollow walking stick",
+          "D. Mixed with tea leaves"
+        ],
+        correct: "B"
+      },
+      {
+        id: 3,
+        type: 'true_false',
+        question: "The first coffee plants in India were grown in Mysore.",
+        options: ["TRUE", "FALSE", "NOT GIVEN"],
+        correct: "TRUE"
+      },
+      {
+        id: 4,
+        type: 'multiple_choice',
+        question: "What event triggered the start of coffee culture in Vienna?",
+        options: [
+          "A. The arrival of Italian merchants",
+          "B. A royal decree",
+          "C. The Battle of Vienna",
+          "D. The invention of the espresso machine"
+        ],
+        correct: "C"
+      }
+    ]
+  },
+  writing: {
+    title: "Writing Task 2: Academic Essay",
+    duration: 3600, // 60 minutes
+    prompt: `
+      <h3 class="font-bold text-lg mb-2">International Education</h3>
+      <p class="mb-4">Write about the following topic:</p>
+      <div class="bg-gray-100 p-4 border-l-4 border-uni-primary mb-4 italic">
+        "Some people believe that studying at a university in a foreign country is the best way to learn about another culture. Others believe that it is better to learn about other cultures through the media and the internet."
+      </div>
+      <p class="mb-2">Discuss both these views and give your own opinion.</p>
+      <p>Give reasons for your answer and include any relevant examples from your own knowledge or experience.</p>
+      <p class="mt-4 font-bold">Write at least 250 words.</p>
+    `
+  }
 };
 
-const QUESTIONS = [
-  {
-    id: 1,
-    type: 'multiple_choice',
-    question: "According to Paragraph A, what is a key driver of the increase in international students?",
-    options: [
-      "A. The decline of local universities.",
-      "B. Government policies and globalization.",
-      "C. The reduction of travel costs.",
-      "D. Strict visa regulations."
-    ],
-    correct: "B"
-  },
-  {
-    id: 2,
-    type: 'true_false',
-    question: "Virtual mobility is considered a more environmentally friendly option than physical travel.",
-    options: ["TRUE", "FALSE", "NOT GIVEN"],
-    correct: "TRUE"
-  },
-  {
-    id: 3,
-    type: 'multiple_choice',
-    question: "What is meant by the term 'brain circulation' in Paragraph C?",
-    options: [
-      "A. Students moving constantly between countries.",
-      "B. The permanent loss of talent from developing nations.",
-      "C. Skilled professionals returning home with new skills.",
-      "D. The exchange of academic journals."
-    ],
-    correct: "C"
-  },
-  {
-    id: 4,
-    type: 'true_false',
-    question: "The number of international students has remained stable since 1975.",
-    options: ["TRUE", "FALSE", "NOT GIVEN"],
-    correct: "FALSE"
-  },
-  {
-    id: 5,
-    type: 'multiple_choice',
-    question: "Which region is mentioned as an emerging hub for international students?",
-    options: [
-      "A. South America",
-      "B. Asia",
-      "C. Eastern Europe",
-      "D. Antarctica"
-    ],
-    correct: "B"
-  }
-];
-
 export default function MockTestSection({ language }: { language: Language }) {
-  const [isStarted, setIsStarted] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes for mini test
+  const [activeSection, setActiveSection] = useState<SectionType>('menu');
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [writingText, setWritingText] = useState("");
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   
+  // Audio Player State (Simulation)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+
   // Timer Logic
   useEffect(() => {
     let timer: number;
-    if (isStarted && !isFinished && timeLeft > 0) {
+    if (activeSection !== 'menu' && activeSection !== 'results' && timeLeft > 0) {
       timer = window.setInterval(() => {
         setTimeLeft((prev) => prev - 1);
+        // Simulate audio progress for Listening
+        if (activeSection === 'listening' && isPlaying && audioProgress < 100) {
+          setAudioProgress(prev => prev + 0.5);
+        }
       }, 1000);
-    } else if (timeLeft === 0) {
-      finishTest();
+    } else if (timeLeft === 0 && activeSection !== 'menu' && activeSection !== 'results') {
+      finishSection();
     }
     return () => clearInterval(timer);
-  }, [isStarted, isFinished, timeLeft]);
+  }, [activeSection, timeLeft, isPlaying, audioProgress]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -97,266 +147,361 @@ export default function MockTestSection({ language }: { language: Language }) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleOptionSelect = (option: string) => {
-    // IELTS options usually A, B, C or TRUE/FALSE. Extract value.
-    const value = option.split('.')[0].trim(); 
-    setAnswers(prev => ({ ...prev, [QUESTIONS[currentQuestion].id]: value }));
-  };
-
-  const finishTest = () => {
-    setIsFinished(true);
-  };
-
-  const restartTest = () => {
-    setIsStarted(false);
-    setIsFinished(false);
-    setCurrentQuestion(0);
+  const startSection = (section: 'listening' | 'reading' | 'writing') => {
+    setActiveSection(section);
+    setTimeLeft(TEST_DATA[section].duration);
     setAnswers({});
-    setTimeLeft(600);
+    setWritingText("");
+    setCurrentQuestionIndex(0);
+    setAudioProgress(0);
+    setIsPlaying(section === 'listening'); // Auto-play for listening
   };
 
-  const calculateScore = () => {
+  const finishSection = () => {
+    setActiveSection('results');
+    setIsPlaying(false);
+  };
+
+  const calculateReadingScore = () => {
     let correct = 0;
-    QUESTIONS.forEach(q => {
-      if (answers[q.id] === q.correct) correct++;
+    TEST_DATA.reading.questions.forEach(q => {
+      if (answers[`r-${q.id}`] === q.correct) correct++;
     });
-    // Rough Band Calculation for 5 questions
-    if (correct === 5) return "9.0";
-    if (correct === 4) return "7.5";
-    if (correct === 3) return "6.0";
-    if (correct === 2) return "5.0";
-    return "4.0";
+    return { correct, total: TEST_DATA.reading.questions.length };
   };
 
-  // --- RENDERS ---
+  const calculateListeningScore = () => {
+    let correct = 0;
+    TEST_DATA.listening.questions.forEach(q => {
+      // Case insensitive check for gap fill
+      const userAnswer = answers[`l-${q.id}`]?.toLowerCase().trim();
+      const correctAns = q.correct.toLowerCase();
+      if (userAnswer === correctAns || (q.type === 'multiple_choice' && answers[`l-${q.id}`] === q.correct)) {
+        correct++;
+      }
+    });
+    return { correct, total: TEST_DATA.listening.questions.length };
+  };
 
-  // 1. Start Screen
-  if (!isStarted) {
+  const getWordCount = () => {
+    return writingText.trim().split(/\s+/).filter(w => w.length > 0).length;
+  };
+
+  // --- RENDERERS ---
+
+  // 1. MENU SCREEN
+  if (activeSection === 'menu') {
     return (
       <section id="mock-test" className="py-24 bg-uni-gray">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-            <div className="bg-uni-primary p-8 text-center">
-              <h2 className="text-3xl font-serif font-bold text-white mb-2">IELTS Reading Simulation</h2>
-              <p className="text-red-100">Mini-Mock Test (Academic Module)</p>
-            </div>
-            <div className="p-10 text-center">
-              <div className="flex justify-center mb-8">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Clock className="w-10 h-10 text-uni-secondary" />
-                </div>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">IELTS Mock Test Center</h2>
+            <p className="text-gray-600">Выберите секцию для практики. Интерфейс полностью повторяет реальный экзамен.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Listening Card */}
+            <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-500">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <Headphones className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Are you ready?</h3>
-              <ul className="text-left max-w-md mx-auto space-y-3 text-gray-600 mb-8">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500" /> Real computer-delivered interface style</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500" /> 5 Questions (Mini version)</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500" /> 10 Minutes Time Limit</li>
+              <h3 className="text-xl font-bold text-center mb-2">Listening</h3>
+              <p className="text-gray-500 text-center text-sm mb-6">30 minutes • 4 Parts</p>
+              <ul className="text-sm text-gray-600 mb-8 space-y-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Native Audio Simulation</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Gap Fill & Multiple Choice</li>
               </ul>
-              <button 
-                onClick={() => setIsStarted(true)}
-                className="bg-uni-primary hover:bg-red-800 text-white px-10 py-4 rounded font-bold text-lg transition shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Start Practice Test
-              </button>
-              <p className="mt-4 text-xs text-gray-400">This is a simulation for practice purposes only.</p>
-            </div>
+              <button onClick={() => startSection('listening')} className="w-full py-3 border-2 border-blue-500 text-blue-600 font-bold rounded hover:bg-blue-50 transition">Start Listening</button>
+            </motion.div>
+
+            {/* Reading Card */}
+            <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-uni-primary">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <BookOpen className="w-8 h-8 text-uni-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-center mb-2">Reading</h3>
+              <p className="text-gray-500 text-center text-sm mb-6">60 minutes • 3 Passages</p>
+              <ul className="text-sm text-gray-600 mb-8 space-y-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Split-Screen Interface</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> T/F/NG & Multiple Choice</li>
+              </ul>
+              <button onClick={() => startSection('reading')} className="w-full py-3 bg-uni-primary text-white font-bold rounded hover:bg-red-800 transition shadow-md">Start Reading</button>
+            </motion.div>
+
+            {/* Writing Card */}
+            <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-yellow-500">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <PenTool className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-bold text-center mb-2">Writing</h3>
+              <p className="text-gray-500 text-center text-sm mb-6">60 minutes • Task 2</p>
+              <ul className="text-sm text-gray-600 mb-8 space-y-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Live Word Counter</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Official Task UI</li>
+              </ul>
+              <button onClick={() => startSection('writing')} className="w-full py-3 border-2 border-yellow-500 text-yellow-600 font-bold rounded hover:bg-yellow-50 transition">Start Writing</button>
+            </motion.div>
           </div>
         </div>
       </section>
     );
   }
 
-  // 2. Results Screen
-  if (isFinished) {
-    const score = calculateScore();
-    const correctCount = Object.keys(answers).filter(k => answers[Number(k)] === QUESTIONS.find(q => q.id === Number(k))?.correct).length;
+  // 2. RESULTS SCREEN
+  if (activeSection === 'results') {
+    const rScore = calculateReadingScore();
+    const lScore = calculateListeningScore();
+    // Мы не можем автоматически проверить Writing на фронтенде, поэтому показываем заглушку
+    const wWords = getWordCount();
 
     return (
-      <section id="mock-test" className="py-24 bg-uni-gray">
-        <div className="max-w-3xl mx-auto px-6">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 text-center"
-          >
-            <div className="bg-uni-secondary p-8">
-              <h2 className="text-2xl font-serif font-bold text-white">Test Results</h2>
-            </div>
-            <div className="p-10">
-              <div className="mb-6">
-                <span className="text-gray-500 uppercase tracking-widest text-sm">Estimated Band Score</span>
-                <div className="text-8xl font-bold text-uni-primary mt-2">{score}</div>
-              </div>
-              <p className="text-xl text-gray-800 mb-8">
-                You got <span className="font-bold">{correctCount}</span> out of <span className="font-bold">{QUESTIONS.length}</span> correct.
-              </p>
-              
-              <div className="bg-gray-50 p-6 rounded-lg mb-8 text-left max-w-lg mx-auto border border-gray-200">
-                <h4 className="font-bold mb-4 text-gray-900 border-b border-gray-200 pb-2">Review:</h4>
-                <ul className="space-y-2 text-sm">
-                  {QUESTIONS.map((q, i) => {
-                    const isCorrect = answers[q.id] === q.correct;
-                    return (
-                      <li key={i} className="flex justify-between items-center">
-                        <span className="text-gray-600">Question {i + 1}</span>
-                        <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-500'}`}>
-                          {isCorrect ? 'Correct' : `Wrong (Correct: ${q.correct})`}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+      <section className="py-24 bg-uni-gray min-h-screen flex items-center justify-center">
+        <div className="bg-white p-12 rounded-2xl shadow-2xl max-w-2xl w-full text-center">
+          <div className="mb-6 inline-flex p-4 bg-green-100 rounded-full">
+            <CheckCircle2 className="w-12 h-12 text-green-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Test Completed</h2>
+          <p className="text-gray-600 mb-10">Результаты вашей практики были сохранены.</p>
 
-              <button 
-                onClick={restartTest}
-                className="flex items-center gap-2 mx-auto text-uni-secondary font-bold hover:text-uni-primary transition"
-              >
-                <RefreshCw className="w-4 h-4" /> Try Again
-              </button>
-            </div>
-          </motion.div>
+          <div className="grid grid-cols-1 gap-6 mb-10 text-left">
+            {/* Results Logic */}
+            {Object.keys(answers).some(k => k.startsWith('r-')) && (
+              <div className="bg-red-50 p-6 rounded-lg border border-red-100">
+                <h3 className="font-bold text-lg text-uni-primary mb-2">Reading</h3>
+                <p>Correct: <span className="font-bold">{rScore.correct}</span> / {rScore.total}</p>
+              </div>
+            )}
+            
+            {Object.keys(answers).some(k => k.startsWith('l-')) && (
+              <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                <h3 className="font-bold text-lg text-blue-600 mb-2">Listening</h3>
+                <p>Correct: <span className="font-bold">{lScore.correct}</span> / {lScore.total}</p>
+              </div>
+            )}
+
+            {writingText.length > 0 && (
+              <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+                <h3 className="font-bold text-lg text-yellow-600 mb-2">Writing</h3>
+                <p>Words written: <span className="font-bold">{wWords}</span></p>
+                <p className="text-sm text-gray-500 mt-2">Note: Automated grading for Writing is not available in this demo. Please consult with a teacher.</p>
+              </div>
+            )}
+          </div>
+
+          <button onClick={() => setActiveSection('menu')} className="bg-uni-secondary text-white px-8 py-3 rounded font-bold hover:bg-gray-800 transition">
+            Back to Menu
+          </button>
         </div>
       </section>
     );
   }
 
-  // 3. Test Interface (IELTS Computer Style)
+  // --- COMMON UI FOR TESTS ---
   return (
-    <section id="mock-test" className="h-screen bg-gray-100 flex flex-col fixed inset-0 z-[60]">
-      {/* Top Bar */}
-      <div className="bg-white h-16 border-b border-gray-300 flex items-center justify-between px-6 shadow-sm flex-shrink-0">
+    <section className="fixed inset-0 z-[60] bg-gray-100 flex flex-col h-screen">
+      
+      {/* 1. TOP BAR */}
+      <div className="bg-white h-16 border-b border-gray-300 flex items-center justify-between px-6 flex-shrink-0 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="text-xl font-bold text-gray-800">IELTS Reading</div>
-          <div className="bg-uni-gray px-3 py-1 rounded text-sm text-gray-600 hidden md:block">Academic Mobility Center</div>
+          <div className="text-xl font-bold text-gray-900 capitalize flex items-center gap-2">
+            {activeSection === 'listening' && <Headphones className="w-5 h-5"/>}
+            {activeSection === 'reading' && <BookOpen className="w-5 h-5"/>}
+            {activeSection === 'writing' && <PenTool className="w-5 h-5"/>}
+            IELTS {activeSection}
+          </div>
         </div>
+        
+        {/* LISTENING AUDIO PLAYER SIMULATION */}
+        {activeSection === 'listening' && (
+          <div className="flex-1 mx-12 flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
+            <button onClick={() => setIsPlaying(!isPlaying)} className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700">
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-1" />}
+            </button>
+            <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 transition-all duration-1000 ease-linear" style={{ width: `${audioProgress}%` }} />
+            </div>
+            <span className="text-xs font-mono text-gray-500">Audio Playing...</span>
+          </div>
+        )}
+
         <div className="flex items-center gap-6">
-          <div className={`text-xl font-mono font-bold flex items-center gap-2 ${timeLeft < 60 ? 'text-red-600 animate-pulse' : 'text-uni-primary'}`}>
+          <div className={`text-xl font-mono font-bold flex items-center gap-2 ${timeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-uni-primary'}`}>
             <Clock className="w-5 h-5" />
             {formatTime(timeLeft)}
           </div>
-          <button className="text-gray-400 hover:text-uni-secondary flex items-center gap-1 text-sm font-bold">
+          <button className="text-gray-400 hover:text-uni-secondary text-sm font-bold flex items-center gap-1">
             <HelpCircle className="w-4 h-4" /> Help
           </button>
         </div>
       </div>
 
-      {/* Main Content - Split Screen */}
+      {/* 2. MAIN CONTENT AREA (SPLIT SCREEN) */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Left Side: Passage */}
+        {/* LEFT SIDE (Material) */}
         <div className="w-1/2 p-8 overflow-y-auto border-r border-gray-300 bg-white">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">{READING_PASSAGE.title}</h2>
-          <div 
-            className="prose prose-lg text-gray-700 max-w-none font-serif leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: READING_PASSAGE.text }}
-          />
+          {activeSection === 'reading' && (
+             <div className="prose prose-lg text-gray-800 max-w-none" dangerouslySetInnerHTML={{ __html: TEST_DATA.reading.text }} />
+          )}
+          {activeSection === 'writing' && (
+             <div className="prose prose-lg text-gray-800 max-w-none" dangerouslySetInnerHTML={{ __html: TEST_DATA.writing.prompt }} />
+          )}
+          {activeSection === 'listening' && (
+             <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <Headphones className="w-24 h-24 mb-4 opacity-20" />
+                <p>Listen to the audio track and answer the questions on the right.</p>
+                <p className="text-sm mt-4 text-blue-500 font-bold animate-pulse">Audio is simulated for this demo.</p>
+             </div>
+          )}
         </div>
 
-        {/* Right Side: Questions */}
+        {/* RIGHT SIDE (Questions/Input) */}
         <div className="w-1/2 p-8 overflow-y-auto bg-gray-50">
-          <div className="max-w-xl mx-auto">
-            <div className="mb-6 flex justify-between items-center">
-              <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Question {currentQuestion + 1} of {QUESTIONS.length}</span>
+          
+          {/* WRITING INPUT */}
+          {activeSection === 'writing' && (
+            <div className="h-full flex flex-col">
+              <textarea
+                value={writingText}
+                onChange={(e) => setWritingText(e.target.value)}
+                placeholder="Start typing your essay here..."
+                className="flex-1 w-full p-6 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uni-primary focus:border-transparent resize-none font-serif text-lg leading-relaxed"
+                spellCheck={false}
+              />
+              <div className="mt-4 flex justify-between items-center text-gray-600 font-bold">
+                <span>Word Count: <span className={getWordCount() >= 250 ? "text-green-600" : "text-red-500"}>{getWordCount()}</span> / 250</span>
+              </div>
             </div>
+          )}
 
-            <AnimatePresence mode='wait'>
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 mb-8">
-                  <h3 className="text-lg font-bold text-gray-900 mb-6 leading-relaxed">
-                    {QUESTIONS[currentQuestion].question}
-                  </h3>
-                  <div className="space-y-3">
-                    {QUESTIONS[currentQuestion].options.map((option, idx) => {
-                      const val = option.split('.')[0].trim();
-                      const isSelected = answers[QUESTIONS[currentQuestion].id] === val;
-                      
-                      return (
-                        <label 
-                          key={idx} 
-                          className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                            isSelected 
-                              ? 'bg-uni-primary/5 border-uni-primary' 
-                              : 'border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          <input 
-                            type="radio" 
-                            name={`q-${currentQuestion}`} 
-                            className="w-4 h-4 text-uni-primary focus:ring-uni-primary border-gray-300"
-                            checked={isSelected}
-                            onChange={() => handleOptionSelect(option)}
-                          />
-                          <span className={`ml-3 ${isSelected ? 'font-bold text-uni-primary' : 'text-gray-700'}`}>
-                            {option}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+          {/* READING / LISTENING QUESTIONS */}
+          {(activeSection === 'reading' || activeSection === 'listening') && (
+            <div className="max-w-xl mx-auto">
+              <div className="mb-6 flex justify-between items-center">
+                <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">
+                  Question {currentQuestionIndex + 1} of {TEST_DATA[activeSection].questions.length}
+                </span>
+              </div>
+
+              {TEST_DATA[activeSection].questions.map((q, idx) => {
+                if (idx !== currentQuestionIndex) return null;
+                const prefix = activeSection === 'reading' ? 'r-' : 'l-';
+                const answerKey = `${prefix}${q.id}`;
+
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="bg-white p-8 rounded-xl shadow-sm border border-gray-200"
+                  >
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">{q.question}</h3>
+                    
+                    {/* Multiple Choice */}
+                    {q.type === 'multiple_choice' && q.options && (
+                      <div className="space-y-3">
+                        {q.options.map((opt, i) => {
+                           const val = opt.split('.')[0].trim();
+                           return (
+                            <label key={i} className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${answers[answerKey] === val ? 'bg-uni-primary/5 border-uni-primary' : 'hover:bg-gray-50'}`}>
+                              <input 
+                                type="radio" 
+                                name={`q-${q.id}`} 
+                                checked={answers[answerKey] === val}
+                                onChange={() => setAnswers(prev => ({...prev, [answerKey]: val}))}
+                                className="w-4 h-4 text-uni-primary"
+                              />
+                              <span className="ml-3 text-gray-700">{opt}</span>
+                            </label>
+                           );
+                        })}
+                      </div>
+                    )}
+
+                    {/* True/False */}
+                    {q.type === 'true_false' && q.options && (
+                      <div className="flex gap-4">
+                        {q.options.map((opt, i) => (
+                           <button 
+                            key={i}
+                            onClick={() => setAnswers(prev => ({...prev, [answerKey]: opt}))}
+                            className={`flex-1 py-3 border rounded font-bold transition ${answers[answerKey] === opt ? 'bg-uni-primary text-white border-uni-primary' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                           >
+                             {opt}
+                           </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Gap Fill */}
+                    {q.type === 'gap_fill' && (
+                      <input 
+                        type="text"
+                        placeholder="Type your answer..."
+                        value={answers[answerKey] || ''}
+                        onChange={(e) => setAnswers(prev => ({...prev, [answerKey]: e.target.value}))}
+                        className="w-full p-4 border border-gray-300 rounded focus:ring-2 focus:ring-uni-primary outline-none font-bold text-lg"
+                      />
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Bar: Navigation */}
+      {/* 3. BOTTOM BAR (NAVIGATION) */}
       <div className="bg-white h-20 border-t border-gray-300 px-6 flex items-center justify-between flex-shrink-0">
         
-        {/* Question Palette */}
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-          {QUESTIONS.map((q, i) => {
-            const isAnswered = answers[q.id] !== undefined;
-            return (
-              <button
-                key={i}
-                onClick={() => setCurrentQuestion(i)}
-                className={`w-10 h-10 rounded text-sm font-bold flex items-center justify-center transition ${
-                  currentQuestion === i 
-                    ? 'bg-uni-secondary text-white' 
-                    : isAnswered 
-                      ? 'bg-gray-800 text-white opacity-40' 
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-              >
-                {i + 1}
-              </button>
-            );
-          })}
-        </div>
+        {/* Question Palette (Only for R/L) */}
+        {(activeSection === 'reading' || activeSection === 'listening') ? (
+          <div className="flex gap-2">
+            {TEST_DATA[activeSection].questions.map((q, i) => {
+              const prefix = activeSection === 'reading' ? 'r-' : 'l-';
+              const isAnswered = answers[`${prefix}${q.id}`] !== undefined && answers[`${prefix}${q.id}`] !== '';
+              return (
+                <button
+                  key={i}
+                  onClick={() => setCurrentQuestionIndex(i)}
+                  className={`w-10 h-10 rounded text-sm font-bold transition ${currentQuestionIndex === i ? 'bg-uni-secondary text-white' : isAnswered ? 'bg-gray-800 text-white opacity-40' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                >
+                  {i + 1}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500 italic">Writing Task 2</div>
+        )}
 
-        {/* Nav Buttons */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setCurrentQuestion(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestion === 0}
-            className="flex items-center gap-2 px-6 py-3 rounded font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
-          >
-            <ChevronLeft className="w-5 h-5" /> Prev
-          </button>
-          
-          {currentQuestion === QUESTIONS.length - 1 ? (
-            <button 
-              onClick={finishTest}
-              className="flex items-center gap-2 px-8 py-3 rounded font-bold bg-uni-primary text-white hover:bg-red-800 transition shadow-md"
-            >
-              Submit Test
-            </button>
-          ) : (
-            <button 
-              onClick={() => setCurrentQuestion(prev => Math.min(QUESTIONS.length - 1, prev + 1))}
-              className="flex items-center gap-2 px-8 py-3 rounded font-bold bg-uni-secondary text-white hover:bg-gray-800 transition shadow-md"
-            >
-              Next <ChevronRight className="w-5 h-5" />
-            </button>
+          {(activeSection === 'reading' || activeSection === 'listening') && (
+             <>
+               <button 
+                 onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
+                 disabled={currentQuestionIndex === 0}
+                 className="px-6 py-3 rounded font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+               >
+                 <ChevronLeft className="w-5 h-5 inline mr-1" /> Prev
+               </button>
+               <button 
+                 onClick={() => setCurrentQuestionIndex(prev => Math.min(TEST_DATA[activeSection].questions.length - 1, prev + 1))}
+                 disabled={currentQuestionIndex === TEST_DATA[activeSection].questions.length - 1}
+                 className="px-6 py-3 rounded font-bold bg-uni-secondary text-white hover:bg-gray-800 disabled:opacity-50 disabled:bg-gray-300"
+               >
+                 Next <ChevronRight className="w-5 h-5 inline ml-1" />
+               </button>
+             </>
           )}
+
+          <button 
+            onClick={finishSection}
+            className="px-8 py-3 rounded font-bold bg-uni-primary text-white hover:bg-red-800 shadow-md ml-4"
+          >
+            Submit Section
+          </button>
         </div>
       </div>
     </section>
