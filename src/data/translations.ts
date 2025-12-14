@@ -15,9 +15,9 @@ export const translations = {
     en: 'Discover Opportunities'
   },
   heroBtnSecondary: {
-    kk: 'Даму стратегиясы',
-    ru: 'Стратегия развития',
-    en: 'Development Strategy'
+    kk: 'Жаһандық пайым',
+    ru: 'Глобальное видение',
+    en: 'Global Vision'
   },
   // Статистика (короткие подписи)
   statPartners: {
