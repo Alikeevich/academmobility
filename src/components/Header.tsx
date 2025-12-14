@@ -59,6 +59,9 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
             <a href="#programs" className="hover:text-uni-primary transition uppercase tracking-wide">
               Программы и Тесты
             </a>
+            <a href="#mock-test" className="hover:text-uni-primary transition uppercase tracking-wide">
+              IELTS Test
+            </a>
             <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />
           </nav>
 
@@ -87,6 +90,9 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
               className="text-gray-900 font-medium py-2 border-b border-gray-50"
             >
               Программы и Тесты
+            </a>
+            <a href="#mock-test" className="hover:text-uni-primary transition uppercase tracking-wide">
+              IELTS Test
             </a>
             
             {/* Переключатель языка для мобильных */}
