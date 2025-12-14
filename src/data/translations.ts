@@ -14,6 +14,27 @@ export const translations = {
     ru: 'Открыть возможности',
     en: 'Discover Opportunities'
   },
+  heroBtnSecondary: {
+    kk: 'Даму стратегиясы',
+    ru: 'Стратегия развития',
+    en: 'Development Strategy'
+  },
+  // Статистика (короткие подписи)
+  statPartners: {
+    kk: 'Серіктес ЖОО-лар',
+    ru: 'Вузов-партнеров',
+    en: 'Partner Universities'
+  },
+  statCountries: {
+    kk: 'Елдер',
+    ru: 'Страны мира',
+    en: 'Countries'
+  },
+  statStudents: {
+    kk: 'Шетелдік студенттер',
+    ru: 'Иностранных студентов',
+    en: 'International Students'
+  },
   // ИЗМЕНЕНО: Заголовок про Интернационализм
   about: {
     kk: 'Интернационалдандыру дегеніміз не?',
