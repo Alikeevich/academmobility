@@ -1,6 +1,6 @@
 // src/components/Header.tsx
 import { useState } from 'react';
-import { Phone, Mail, Menu, X } from 'lucide-react'; // Добавили Menu и X
+import { Phone, Mail, Menu, X } from 'lucide-react';
 import { Language } from '../types/language';
 import LanguageSwitcher from './LanguageSwitcher';
 import logoUni from '../assets/images/logo.png';
@@ -13,14 +13,14 @@ interface HeaderProps {
 export default function Header({ currentLanguage, onLanguageChange }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Функция для закрытия меню при клике на ссылку (чтобы удобно было)
+  // Функция для закрытия меню при клике на ссылку
   const handleLinkClick = () => {
     setIsMobileMenuOpen(false);
   };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      {/* Верхняя полоска контактов (Скрываем на мобильных, чтобы не занимать место) */}
+      {/* Верхняя полоска контактов (Скрываем на мобильных) */}
       <div className="bg-uni-secondary text-white py-2 px-6 text-sm hidden md:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex gap-6">
@@ -41,7 +41,6 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
           <div className="flex items-center gap-3">
             <img src={logoUni} alt="Margulan University" className="h-10 md:h-12 w-auto object-contain" />
             
-            {/* ИСПРАВЛЕНИЕ: Убрали hidden, теперь видно всегда */}
             <div className="flex flex-col justify-center">
               <h1 className="text-sm md:text-lg font-serif font-bold text-gray-900 leading-none">
                 MARGULAN
@@ -52,7 +51,7 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
             </div>
           </div>
           
-          {/* Десктопное меню (Видно только на больших экранах) */}
+          {/* Десктопное меню */}
           <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-700">
             <a href="#about" className="hover:text-uni-primary transition uppercase tracking-wide">
               Интернационализация
@@ -60,18 +59,17 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
             <a href="#programs" className="hover:text-uni-primary transition uppercase tracking-wide">
               Программы и Тесты
             </a>
-            {/* Ссылка "Требования" и "Тесты" удалены, всё теперь в Programs */}
             <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />
           </nav>
-          
-          // Внутри return -> mobile menu
-          {isMobileMenuOpen && (
-            <div className="md:hidden ...">
-              <a href="#about" onClick={handleLinkClick} className="...">Интернационализация</a>
-              <a href="#programs" onClick={handleLinkClick} className="...">Программы и Тесты</a>
-              {/* Остальное как было */}
-            </div>
 
+          {/* Мобильная кнопка меню */}
+          <button 
+            className="md:hidden p-2 text-gray-600 hover:text-uni-primary transition"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
 
         {/* Выпадающее мобильное меню */}
         {isMobileMenuOpen && (
@@ -81,21 +79,14 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
               onClick={handleLinkClick}
               className="text-gray-900 font-medium py-2 border-b border-gray-50"
             >
-              О центре
+              Интернационализация
             </a>
             <a 
               href="#programs" 
               onClick={handleLinkClick}
               className="text-gray-900 font-medium py-2 border-b border-gray-50"
             >
-              Программы
-            </a>
-            <a 
-              href="#tests" 
-              onClick={handleLinkClick}
-              className="text-gray-900 font-medium py-2 border-b border-gray-50"
-            >
-              Тесты
+              Программы и Тесты
             </a>
             
             {/* Переключатель языка для мобильных */}
@@ -104,7 +95,7 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
               <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />
             </div>
 
-            {/* Контакты для мобильных (так как верхняя полоска скрыта) */}
+            {/* Контакты для мобильных */}
             <div className="pt-4 mt-2 border-t border-gray-100 text-xs text-gray-500 space-y-2">
               <div className="flex items-center gap-2"><Phone className="w-3 h-3" /> +7 (7182) 67-36-85</div>
               <div className="flex items-center gap-2"><Mail className="w-3 h-3" /> international@margulan.edu.kz</div>
