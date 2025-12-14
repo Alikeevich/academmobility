@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Language } from '../types/language';
 import { translations } from '../data/translations';
 import { ArrowRight } from 'lucide-react';
-import aboutImg from '../assets/images/about.jpg';
+import aboutImg from '../assets/images/about.png';
 
 // 1. Добавляем onReadMore в интерфейс
 interface AboutSectionProps {
