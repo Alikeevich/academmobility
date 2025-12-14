@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Language } from '../types/language';
 import { translations } from '../data/translations';
 import { ArrowRight } from 'lucide-react';
-import aboutImg from '../assets/images/about.jpg'; // Импорт картинки
+import aboutImg from '../assets/images/about.jpg';
 
 export default function AboutSection({ language }: { language: Language }) {
   return (
@@ -20,8 +20,8 @@ export default function AboutSection({ language }: { language: Language }) {
             <div className="relative z-10 aspect-[4/3] bg-gray-200 shadow-xl">
               <img 
                 src={aboutImg} 
-                alt="Students" 
-                className="w-full h-full object-cover"
+                alt="Internationalization" 
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
             </div>
           </motion.div>
@@ -31,17 +31,19 @@ export default function AboutSection({ language }: { language: Language }) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
+            {/* Новый заголовок */}
             <h2 className="text-4xl font-serif font-bold text-gray-900 mb-6">
               {translations.about[language]}
             </h2>
             <div className="w-20 h-1 bg-uni-primary mb-8" />
             
-            <p className="text-lg text-gray-600 leading-relaxed font-light mb-6">
+            <p className="text-lg text-gray-600 leading-relaxed font-light mb-8">
               {translations.aboutText[language]}
             </p>
             
-            <a href="#" className="inline-flex items-center gap-2 text-uni-primary font-bold hover:underline uppercase tracking-wider text-sm">
-              Подробнее о центре <ArrowRight className="w-4 h-4" />
+            {/* Обновленная кнопка "Подробнее" */}
+            <a href="#" className="inline-flex items-center gap-2 bg-gray-100 hover:bg-uni-primary hover:text-white px-6 py-3 rounded text-sm font-medium transition-colors uppercase tracking-wider">
+              {translations.moreDetails[language]} <ArrowRight className="w-4 h-4" />
             </a>
           </motion.div>
 
