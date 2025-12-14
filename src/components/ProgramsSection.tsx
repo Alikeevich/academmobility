@@ -4,14 +4,29 @@ import { translations } from '../data/translations';
 import { Globe, Award, Users, ArrowUpRight, FileCheck, ExternalLink } from 'lucide-react';
 
 export default function ProgramsSection({ language }: { language: Language }) {
-  // Данные для программ
+  // Данные для программ (Добавлены официальные ссылки)
   const programs = [
-    { icon: Globe, title: 'Erasmus+', desc: translations.erasmus[language] },
-    { icon: Award, title: 'Болашақ', desc: translations.bolashak[language] },
-    { icon: Users, title: 'Exchange', desc: translations.exchange[language] }
+    { 
+      icon: Globe, 
+      title: 'Erasmus+', 
+      desc: translations.erasmus[language],
+      link: 'https://erasmus-plus.ec.europa.eu'
+    },
+    { 
+      icon: Award, 
+      title: 'Болашақ', 
+      desc: translations.bolashak[language],
+      link: 'https://bolashak.gov.kz'
+    },
+    { 
+      icon: Users, 
+      title: 'Exchange', 
+      desc: translations.exchange[language],
+      link: 'https://enic-kazakhstan.edu.kz' // Центр Болонского процесса РК
+    }
   ];
 
-  // Данные для тестов (обновленные со ссылками)
+  // Данные для тестов
   const tests = [
     { 
       name: 'IELTS Academic', 
@@ -32,7 +47,7 @@ export default function ProgramsSection({ language }: { language: Language }) {
       link: 'https://www.goethe.de' 
     },
     { 
-      name: 'TestDaF', // НОВЫЙ ТЕСТ
+      name: 'TestDaF',
       min: 'TDN 4', 
       desc: translations.testdaf[language], 
       link: 'https://www.testdaf.de' 
@@ -68,7 +83,7 @@ export default function ProgramsSection({ language }: { language: Language }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 border border-gray-100 hover:border-uni-primary shadow-sm hover:shadow-lg transition-all group"
+                className="bg-white p-8 border border-gray-100 hover:border-uni-primary shadow-sm hover:shadow-lg transition-all group flex flex-col"
               >
                 <div className="mb-6 flex justify-between items-start">
                   <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-uni-primary/10 transition-colors">
@@ -76,10 +91,17 @@ export default function ProgramsSection({ language }: { language: Language }) {
                   </div>
                   <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-uni-primary" />
                 </div>
+                
                 <h3 className="text-xl font-bold text-gray-900 mb-4 font-serif">{p.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed mb-6">{p.desc}</p>
-                <a href="#" className="inline-block text-uni-secondary text-sm font-semibold uppercase group-hover:text-uni-primary border-b border-transparent group-hover:border-uni-primary transition-all">
-                  Узнать условия
+                <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">{p.desc}</p>
+                
+                <a 
+                  href={p.link}
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-2 text-uni-secondary text-sm font-semibold uppercase group-hover:text-uni-primary border-b border-transparent group-hover:border-uni-primary transition-all pb-1 w-fit"
+                >
+                  Официальный сайт <ExternalLink className="w-3 h-3" />
                 </a>
               </motion.div>
             ))}
@@ -125,7 +147,7 @@ export default function ProgramsSection({ language }: { language: Language }) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-xs font-bold text-uni-secondary hover:text-uni-primary transition border border-gray-200 hover:border-uni-primary px-3 py-2 rounded hover:bg-white"
                       >
-                        Official Site <ExternalLink className="w-3 h-3" />
+                        Visit Site <ExternalLink className="w-3 h-3" />
                       </a>
                     </td>
                   </tr>
@@ -134,7 +156,7 @@ export default function ProgramsSection({ language }: { language: Language }) {
             </table>
           </div>
           <p className="mt-4 text-xs text-gray-400 italic text-center md:text-left">
-            * Для подачи заявки необходимо зарегистрироваться на официальном сайте провайдера теста.
+            * Для подачи заявки необходимо зарегистрироваться на официальном сайте провайдера программы или теста.
           </p>
         </motion.div>
 
