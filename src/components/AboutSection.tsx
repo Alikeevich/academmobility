@@ -4,7 +4,13 @@ import { translations } from '../data/translations';
 import { ArrowRight } from 'lucide-react';
 import aboutImg from '../assets/images/about.jpg';
 
-export default function AboutSection({ language }: { language: Language }) {
+// 1. Добавляем onReadMore в интерфейс
+interface AboutSectionProps {
+  language: Language;
+  onReadMore: () => void; // <--- НОВОЕ
+}
+
+export default function AboutSection({ language, onReadMore }: AboutSectionProps) {
   return (
     <section id="about" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -31,7 +37,6 @@ export default function AboutSection({ language }: { language: Language }) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            {/* Новый заголовок */}
             <h2 className="text-4xl font-serif font-bold text-gray-900 mb-6">
               {translations.about[language]}
             </h2>
@@ -41,10 +46,13 @@ export default function AboutSection({ language }: { language: Language }) {
               {translations.aboutText[language]}
             </p>
             
-            {/* Обновленная кнопка "Подробнее" */}
-            <a href="#" className="inline-flex items-center gap-2 bg-gray-100 hover:bg-uni-primary hover:text-white px-6 py-3 rounded text-sm font-medium transition-colors uppercase tracking-wider">
+            {/* 2. Вешаем обработчик onClick */}
+            <button 
+              onClick={onReadMore}
+              className="inline-flex items-center gap-2 bg-gray-100 hover:bg-uni-primary hover:text-white px-6 py-3 rounded text-sm font-medium transition-colors uppercase tracking-wider"
+            >
               {translations.moreDetails[language]} <ArrowRight className="w-4 h-4" />
-            </a>
+            </button>
           </motion.div>
 
         </div>
