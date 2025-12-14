@@ -4,7 +4,8 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import AboutSection from './components/AboutSection';
 import ProgramsSection from './components/ProgramsSection';
-import MockTestSection from './components/MockTestSection'; // <--- ИМПОРТ
+import MockTestSection from './components/MockTestSection';
+import PsychologySection from './components/PsychologySection'; // <--- 1. ИМПОРТ
 import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 
@@ -19,7 +20,8 @@ function App() {
         <Hero language={language} />
         <AboutSection language={language} />
         <ProgramsSection language={language} />
-        <MockTestSection language={language} /> {/* <--- ДОБАВЛЕНО СЮДА */}
+        <MockTestSection language={language} />
+        <PsychologySection /> {/* <--- 2. ВСТАВЛЯЕМ СЮДА */}
       </main>
 
       <Footer />
