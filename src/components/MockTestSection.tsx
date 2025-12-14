@@ -75,11 +75,14 @@ export default function MockTestSection({ language }: { language: Language }) {
 
   const handleReturnToMenu = () => {
     setActiveSection('menu');
-    // Исправление навигации: Скроллим к началу теста
+    // ИСПРАВЛЕНИЕ СКРОЛЛА:
+    // 1. Ждем рендера (setTimeout)
+    // 2. Ищем элемент по ID
+    // 3. block: 'start' скроллит к началу элемента, а не к центру
     setTimeout(() => {
-      const element = document.getElementById('mock-test');
+      const element = document.getElementById('mock-test-root');
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);
   };
@@ -105,29 +108,26 @@ export default function MockTestSection({ language }: { language: Language }) {
     }
   };
 
-  // --- SCORING (ИСПРАВЛЕНА ЛОГИКА) ---
+  // --- SCORING ---
   const calculateScores = () => {
     let rScore = 0;
     let lScore = 0;
     
-    // Подсчет Reading (нечувствительный к регистру)
+    // Reading
     READING_DATA.passages.forEach(p => {
       p.questions.forEach(q => {
         const userAnswer = (answers[`r-${q.id}`] || '').trim().toLowerCase();
         const correctAnswer = q.correct.trim().toLowerCase();
         
-        // Для Multiple choice и T/F проверяем точное совпадение
         if (q.type === 'multiple_choice' || q.type === 'true_false') {
           if (userAnswer === correctAnswer) rScore++;
-        } 
-        // Для Gap fill (текст) тоже сверяем в нижнем регистре
-        else {
+        } else {
            if (userAnswer === correctAnswer) rScore++;
         }
       });
     });
 
-    // Подсчет Listening
+    // Listening
     LISTENING_DATA.questions.forEach(q => {
       const userAnswer = (answers[`l-${q.id}`] || '').trim().toLowerCase();
       const correctAnswer = q.correct.trim().toLowerCase();
@@ -135,7 +135,6 @@ export default function MockTestSection({ language }: { language: Language }) {
       if (userAnswer === correctAnswer) lScore++;
     });
 
-    // Подсчет максимумов
     const rTotal = READING_DATA.passages.reduce((acc, p) => acc + p.questions.length, 0);
     const lTotal = LISTENING_DATA.questions.length;
 
@@ -147,7 +146,8 @@ export default function MockTestSection({ language }: { language: Language }) {
   // 1. MENU
   if (activeSection === 'menu') {
     return (
-      <section id="mock-test" className="py-24 bg-uni-gray">
+      // ИСПРАВЛЕНИЕ: scroll-mt-32 создает отступ сверху при скролле, чтобы хедер не перекрывал
+      <section id="mock-test-root" className="py-24 bg-uni-gray scroll-mt-32">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">IELTS Mock Test Center</h2>
@@ -185,8 +185,6 @@ export default function MockTestSection({ language }: { language: Language }) {
   if (activeSection === 'results') {
     const { rScore, rTotal, lScore, lTotal } = calculateScores();
     const wWords = writingText.trim().split(/\s+/).filter(w => w.length > 0).length;
-    
-    // Проверяем, проходил ли студент тест (есть ли ответы ИЛИ есть ли баллы > 0)
     const hasReading = Object.keys(answers).some(k => k.startsWith('r-')) || rScore > 0;
     const hasListening = Object.keys(answers).some(k => k.startsWith('l-')) || lScore > 0;
 
@@ -196,24 +194,23 @@ export default function MockTestSection({ language }: { language: Language }) {
           <h2 className="text-3xl font-bold text-center mb-8">Test Results</h2>
           
           <div className="space-y-6">
-            {/* Блок результатов (показываем, если есть ответы) */}
+            {/* ИСПРАВЛЕНИЕ ЦЕНТРОВКИ: Используем flex justify-center вместо grid */}
             {(hasReading || hasListening) ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-wrap justify-center gap-6">
                 {hasReading && (
-                  <div className="bg-red-50 p-6 rounded text-center border border-red-100">
+                  <div className="bg-red-50 p-6 rounded text-center border border-red-100 min-w-[200px] flex-1 max-w-[300px]">
                     <h3 className="font-bold text-uni-primary mb-2">Reading</h3>
                     <p className="text-5xl font-serif font-bold text-gray-900">{rScore} <span className="text-lg text-gray-400 font-sans">/ {rTotal}</span></p>
                   </div>
                 )}
                 {hasListening && (
-                  <div className="bg-blue-50 p-6 rounded text-center border border-blue-100">
+                  <div className="bg-blue-50 p-6 rounded text-center border border-blue-100 min-w-[200px] flex-1 max-w-[300px]">
                     <h3 className="font-bold text-blue-600 mb-2">Listening</h3>
                     <p className="text-5xl font-serif font-bold text-gray-900">{lScore} <span className="text-lg text-gray-400 font-sans">/ {lTotal}</span></p>
                   </div>
                 )}
               </div>
             ) : (
-              // Если ни Reading ни Listening не проходили
               !writingText && (
                 <div className="text-center text-gray-500 italic">
                   No questions answered.
