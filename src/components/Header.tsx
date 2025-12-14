@@ -54,20 +54,24 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
           
           {/* Десктопное меню (Видно только на больших экранах) */}
           <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-700">
-            <a href="#about" className="hover:text-uni-primary transition uppercase tracking-wide">О центре</a>
-            <a href="#programs" className="hover:text-uni-primary transition uppercase tracking-wide">Программы</a>
-            <a href="#tests" className="hover:text-uni-primary transition uppercase tracking-wide">Тесты</a>
+            <a href="#about" className="hover:text-uni-primary transition uppercase tracking-wide">
+              Интернационализация
+            </a>
+            <a href="#programs" className="hover:text-uni-primary transition uppercase tracking-wide">
+              Программы и Тесты
+            </a>
+            {/* Ссылка "Требования" и "Тесты" удалены, всё теперь в Programs */}
             <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />
           </nav>
+          
+          // Внутри return -> mobile menu
+          {isMobileMenuOpen && (
+            <div className="md:hidden ...">
+              <a href="#about" onClick={handleLinkClick} className="...">Интернационализация</a>
+              <a href="#programs" onClick={handleLinkClick} className="...">Программы и Тесты</a>
+              {/* Остальное как было */}
+            </div>
 
-          {/* Мобильная кнопка меню (Видно только на мобильных) */}
-          <button 
-            className="md:hidden p-2 text-gray-600 hover:text-uni-primary transition"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
 
         {/* Выпадающее мобильное меню */}
         {isMobileMenuOpen && (
