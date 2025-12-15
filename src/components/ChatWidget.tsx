@@ -1,4 +1,3 @@
-// src/components/ChatWidget.tsx
 import { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
@@ -26,7 +25,8 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
-      text: 'Здравствуйте! Я виртуальный помощник Margulan University. Чем могу помочь по вопросам академической мобильности?',
+      // ИЗМЕНЕНО: Нейтральное приветствие
+      text: 'Здравствуйте! Я виртуальный помощник Центра Интернационализации. Чем могу помочь по вопросам мобильности?',
       sender: 'ai',
       timestamp: new Date()
     }
@@ -62,22 +62,21 @@ export default function ChatWidget() {
     setIsLoading(true);
 
     try {
-      // 3. ФОРМИРУЕМ ИСТОРИЮ ДЛЯ API (ИСПРАВЛЕНИЕ ЗДЕСЬ)
-      // Мы берем текущие сообщения (messages), но УБИРАЕМ приветствие (id: 'welcome')
-      // API требует, чтобы история начиналась с пользователя.
+      // 3. ФОРМИРУЕМ ИСТОРИЮ ДЛЯ API
+      // Фильтруем приветственное сообщение, чтобы не ломать контекст API
       const history = messages
-        .filter(msg => msg.id !== 'welcome') // <--- ЭТА СТРОКА РЕШАЕТ ПРОБЛЕМУ
+        .filter(msg => msg.id !== 'welcome')
         .map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'model',
           parts: [{ text: msg.text }]
         }));
 
-      // Запускаем чат с "чистой" историей (без приветствия бота)
+      // Запускаем чат
       const chat = model.startChat({
         history: history,
       });
 
-      // Отправляем новое сообщение
+      // Отправляем сообщение
       const result = await chat.sendMessage(userMessage.text);
       const response = result.response;
       const text = response.text();
@@ -124,7 +123,8 @@ export default function ChatWidget() {
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Margulan AI Assistant</h3>
+                  {/* ИЗМЕНЕНО: Название бота */}
+                  <h3 className="font-bold text-sm">Global AI Assistant</h3>
                   <span className="text-xs text-green-300 flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/> 
                     Online
@@ -195,7 +195,7 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* Кнопка открытия (Floating Action Button) */}
+      {/* Кнопка открытия */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -204,7 +204,6 @@ export default function ChatWidget() {
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
         
-        {/* Индикатор уведомления (если закрыто) */}
         {!isOpen && (
           <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 border-2 border-white rounded-full"></span>
         )}
