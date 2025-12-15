@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Phone, Mail, Menu, X, Globe } from 'lucide-react'; // Добавил Globe
+import { Phone, Mail, Menu, X, Globe } from 'lucide-react'; // Добавили Globe
 import { Language } from '../types/language';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -21,8 +21,8 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
       <div className="bg-uni-secondary text-white py-2 px-6 text-sm hidden md:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex gap-6">
-            <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> +7 (700) 000-00-00</span>
-            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> international@edu.kz</span>
+            <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> +7 (7182) 67-36-85</span>
+            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> international@margulan.edu.kz</span>
           </div>
           <div className="opacity-80 hover:opacity-100 transition cursor-pointer">
             Student Portal
@@ -34,18 +34,18 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
       <header className="bg-white border-b border-gray-200 shadow-sm relative">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
           
-          {/* Logo (Generic) */}
+          {/* НОВЫЙ ЛОГОТИП И НАЗВАНИЕ */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-uni-primary rounded-lg flex items-center justify-center text-white">
-              <Globe className="w-6 h-6" />
+            <div className="bg-uni-primary p-2 rounded-lg">
+              <Globe className="h-8 w-8 text-white" />
             </div>
             
             <div className="flex flex-col justify-center">
-              <h1 className="text-sm md:text-lg font-serif font-bold text-gray-900 leading-none">
-                ACADEMIC MOBILITY
+              <h1 className="text-sm md:text-lg font-serif font-bold text-gray-900 leading-none tracking-wide">
+                INTERGLOBAL
               </h1>
               <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
-                Center of Internationalization
+                Center for Internationalization
               </span>
             </div>
           </div>
@@ -98,8 +98,8 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
             </div>
 
             <div className="pt-4 mt-2 border-t border-gray-100 text-xs text-gray-500 space-y-2">
-              <div className="flex items-center gap-2"><Phone className="w-3 h-3" /> +7 (700) 000-00-00</div>
-              <div className="flex items-center gap-2"><Mail className="w-3 h-3" /> international@edu.kz</div>
+              <div className="flex items-center gap-2"><Phone className="w-3 h-3" /> +7 (7182) 67-36-85</div>
+              <div className="flex items-center gap-2"><Mail className="w-3 h-3" /> international@margulan.edu.kz</div>
             </div>
           </div>
         )}
