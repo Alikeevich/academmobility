@@ -16,7 +16,7 @@ export default function Footer() {
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-uni-primary flex-shrink-0" />
-              <span className="text-gray-400">г. Павлодар, ул. Ломова 64</span>
+              <span className="text-gray-400">г. Павлодар, ул. Олжабай Батыра 60</span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-uni-primary flex-shrink-0" />
