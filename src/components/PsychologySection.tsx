@@ -3,9 +3,8 @@ import { Brain, Activity, UserCheck } from 'lucide-react';
 import MotivationTest from './psychology/MotivationTest';
 import SelfEsteemTest from './psychology/SelfEsteemTest';
 import ReadinessTest from './psychology/ReadinessTest';
-import { Language } from '../types/language'; // Импортируем тип
+import { Language } from '../types/language';
 
-// Принимаем language как пропс
 interface PsychologySectionProps {
   language: Language;
 }
@@ -13,7 +12,6 @@ interface PsychologySectionProps {
 export default function PsychologySection({ language }: PsychologySectionProps) {
   const [activeTab, setActiveTab] = useState<'motivation' | 'esteem' | 'readiness'>('motivation');
 
-  // Переводы для заголовков табов
   const tabs = {
     motivation: { ru: 'Мотивация', kk: 'Мотивация', en: 'Motivation' },
     esteem: { ru: 'Самооценка', kk: 'Өзін-өзі бағалау', en: 'Self-Esteem' },
@@ -65,7 +63,7 @@ export default function PsychologySection({ language }: PsychologySectionProps) 
            </button>
         </div>
 
-        {/* Content - передаем language в каждый тест */}
+        {/* Content - ВАЖНО: передаем language! */}
         {activeTab === 'motivation' && <MotivationTest language={language} />}
         {activeTab === 'esteem' && <SelfEsteemTest language={language} />}
         {activeTab === 'readiness' && <ReadinessTest language={language} />}
