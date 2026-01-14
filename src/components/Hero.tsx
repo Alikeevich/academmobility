@@ -14,63 +14,72 @@ export default function Hero({ language }: { language: Language }) {
   return (
     <section className="relative h-screen min-h-[600px] flex flex-col justify-center bg-uni-secondary overflow-hidden">
       
-      {/* --- BACKGROUND (Вернули красоту) --- */}
+      {/* --- BACKGROUND --- */}
       <div className="absolute inset-0 z-0">
         <img 
           src={heroBg} 
           alt="International Students" 
           className="w-full h-full object-cover"
         />
-        {/* 1. Общее затемнение в цвет бренда */}
+        {/* Слои затемнения */}
         <div className="absolute inset-0 bg-uni-secondary/60 mix-blend-multiply" />
-        
-        {/* 2. Градиент снизу (чтобы скрыть переход к статистике) */}
         <div className="absolute inset-0 bg-gradient-to-t from-uni-secondary via-transparent to-transparent" />
-        
-        {/* 3. Градиент справа налево (акцент на правую часть) */}
-        <div className="absolute inset-0 bg-gradient-to-l from-uni-secondary/80 via-uni-secondary/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-l from-uni-secondary/90 via-uni-secondary/20 to-transparent" />
       </div>
 
       {/* --- CONTENT --- */}
-      {/* items-end прижимает контент вправо */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-end mt-0 md:-mt-10">
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-3xl"
+          // -mr-6 md:-mr-24 сдвигает блок вправо за пределы стандартной сетки, прижимая к краю
+          className="max-w-4xl w-full -mr-6 md:-mr-24 lg:-mr-32"
         >
-          {/* ПОДЛОЖКА ПОД ТЕКСТОМ */}
-          {/* bg-uni-secondary/85 - плотный темный фон */}
-          {/* backdrop-blur-sm - размытие того что под блоком */}
-          <div className="bg-uni-secondary/85 backdrop-blur-md p-8 md:p-12 rounded-3xl shadow-2xl border border-white/10 text-right">
+          {/* FADE ПОДЛОЖКА */}
+          {/* 
+              bg-gradient-to-l: Градиент идет Справа Налево 
+              from-uni-secondary/95: Справа почти черный (95% непрозрачности)
+              to-transparent: Слева полностью прозрачный (fade)
+              rounded-l-3xl: Скругляем только левый край, правый уходит за экран
+          */}
+          <div className="
+            bg-gradient-to-l from-uni-secondary/95 via-uni-secondary/70 to-transparent 
+            backdrop-blur-sm 
+            p-8 md:p-16 
+            rounded-l-[3rem] 
+            text-right
+          ">
             
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-tight tracking-tight">
-              {translations.title[language]}
-            </h1>
-            
-            <p className="text-lg md:text-xl text-gray-300 font-light mb-10 leading-relaxed pl-8 ml-auto border-r-4 border-uni-primary pr-6">
-              {translations.subtitle[language]}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-end">
-              {/* Кнопка "Глобальное видение" */}
-              <a 
-                href="#about"
-                className="px-8 py-4 rounded-lg font-bold text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center gap-2 order-2 sm:order-1"
-              >
-                <Compass className="w-5 h-5" />
-                {translations.heroBtnSecondary[language]}
-              </a>
+            {/* Контейнер для текста, чтобы он не улетал слишком далеко вправо на огромных экранах */}
+            <div className="pr-6 md:pr-12">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-tight tracking-tight drop-shadow-xl">
+                {translations.title[language]}
+              </h1>
+              
+              <p className="text-lg md:text-xl text-gray-200 font-light mb-10 leading-relaxed pl-12 ml-auto border-r-4 border-uni-primary pr-6">
+                {translations.subtitle[language]}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                {/* Кнопка 1 */}
+                <a 
+                  href="#about"
+                  className="px-8 py-4 rounded-lg font-bold text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center gap-2 order-2 sm:order-1"
+                >
+                  <Compass className="w-5 h-5" />
+                  {translations.heroBtnSecondary[language]}
+                </a>
 
-              {/* Кнопка "Открыть возможности" */}
-              <a 
-                href="#programs"
-                className="bg-uni-primary hover:bg-red-800 text-white px-8 py-4 rounded-lg font-bold transition flex items-center justify-center gap-2 group shadow-lg shadow-uni-primary/20 order-1 sm:order-2"
-              >
-                {translations.heroBtnPrimary[language]}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
+                {/* Кнопка 2 */}
+                <a 
+                  href="#programs"
+                  className="bg-uni-primary hover:bg-red-800 text-white px-8 py-4 rounded-lg font-bold transition flex items-center justify-center gap-2 group shadow-lg shadow-uni-primary/20 order-1 sm:order-2"
+                >
+                  {translations.heroBtnPrimary[language]}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
             </div>
 
           </div>
