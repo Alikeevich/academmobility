@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 import InternationalizationPage from './components/InternationalizationPage';
 import QuickAccess from './components/QuickAccess';
+import RequirementsSection from './components/RequirementsSection';
 
 function App() {
   const [language, setLanguage] = useState<Language>('ru');
@@ -30,6 +31,7 @@ function App() {
           language={language} 
           onReadMore={() => setShowTheory(true)} 
         />
+        <RequirementsSection language={language} />
         <ProgramsSection language={language} />
         <MockTestSection language={language} />
         
