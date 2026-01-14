@@ -98,8 +98,8 @@ export default function Header({ currentLanguage, onLanguageChange }: HeaderProp
             </div>
 
             <div className="pt-4 mt-2 border-t border-gray-100 text-xs text-gray-500 space-y-2">
-              <div className="flex items-center gap-2"><Phone className="w-3 h-3" /> +7 (7182) 67-36-85</div>
-              <div className="flex items-center gap-2"><Mail className="w-3 h-3" /> international@margulan.edu.kz</div>
+              <div className="flex items-center gap-2"><Phone className="w-3 h-3" /> +7 702 528 0442</div>
+              <div className="flex items-center gap-2"><Mail className="w-3 h-3" /> bzhumakeldina@gmail.com</div>
             </div>
           </div>
         )}
