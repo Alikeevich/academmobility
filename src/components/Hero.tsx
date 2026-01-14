@@ -14,61 +14,64 @@ export default function Hero({ language }: { language: Language }) {
   return (
     <section className="relative h-screen min-h-[600px] flex flex-col justify-center bg-uni-secondary overflow-hidden">
       
-      {/* BACKGROUND */}
+      {/* BACKGROUND IMAGE */}
       <div className="absolute inset-0 z-0">
         <img 
           src={heroBg} 
           alt="International Students" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-uni-secondary/70 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-t from-uni-secondary via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-uni-secondary/90 via-uni-secondary/40 to-transparent" />
+        {/* Затемнение фона стало чуть слабее, так как у текста теперь свой фон */}
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* CONTENT */}
-      {/* -mt-24 поднимает блок вверх относительно центра */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full -mt-24 md:-mt-2">
+      {/* items-end выравнивает блок по правому краю */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-end -mt-16 md:mt-0">
+        
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: 50 }} // Анимация выезда справа
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl"
+          className="max-w-3xl text-right" // Выравнивание текста внутри блока вправо
         >
-          {/* БЕЙДЖ УДАЛЕН */}
-
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-8 leading-tight tracking-tight">
-            {translations.title[language]}
-          </h1>
-          
-          <p className="text-lg md:text-xl text-gray-200 font-light mb-12 max-w-2xl leading-relaxed border-l-2 border-uni-primary pl-6">
-            {translations.subtitle[language]}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* Кнопка 1: Программы */}
-            <a 
-              href="#programs"
-              className="bg-uni-primary hover:bg-red-800 text-white px-8 py-4 rounded-lg font-bold transition flex items-center justify-center gap-2 group shadow-lg shadow-uni-primary/20"
-            >
-              {translations.heroBtnPrimary[language]}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </a>
+          {/* ПОЛУПРОЗРАЧНЫЙ ФОН ПОД ТЕКСТОМ */}
+          <div className="bg-uni-secondary/70 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-2xl border border-white/10">
             
-            {/* Кнопка 2: Глобальное видение */}
-            <a 
-              href="#about"
-              className="px-8 py-4 rounded-lg font-bold text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center gap-2"
-            >
-              <Compass className="w-5 h-5" />
-              {translations.heroBtnSecondary[language]}
-            </a>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-tight tracking-tight drop-shadow-lg">
+              {translations.title[language]}
+            </h1>
+            
+            <p className="text-lg md:text-xl text-gray-200 font-light mb-10 leading-relaxed pl-8 ml-auto">
+              {translations.subtitle[language]}
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-end">
+               {/* Кнопка 2: Глобальное видение (теперь первая в коде, чтобы быть слева, или наоборот, зависит от дизайна) */}
+               <a 
+                href="#about"
+                className="px-8 py-4 rounded-lg font-bold text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center gap-2 order-2 sm:order-1"
+              >
+                <Compass className="w-5 h-5" />
+                {translations.heroBtnSecondary[language]}
+              </a>
+
+              {/* Кнопка 1: Программы (Акцентная) */}
+              <a 
+                href="#programs"
+                className="bg-uni-primary hover:bg-red-800 text-white px-8 py-4 rounded-lg font-bold transition flex items-center justify-center gap-2 group shadow-lg shadow-uni-primary/20 order-1 sm:order-2"
+              >
+                {translations.heroBtnPrimary[language]}
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+
           </div>
         </motion.div>
       </div>
 
       {/* STATS BAR */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-uni-secondary/80 backdrop-blur-md">
+      <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-uni-secondary/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="grid grid-cols-3 gap-8 md:gap-16">
             {stats.map((stat, index) => (
@@ -77,12 +80,12 @@ export default function Hero({ language }: { language: Language }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + index * 0.2 }}
-                className="flex items-center gap-4"
+                className="flex items-center gap-4 justify-center md:justify-start"
               >
                 <div className="hidden md:flex p-3 bg-white/5 rounded-full text-uni-accent">
                   <stat.icon className="w-6 h-6" />
                 </div>
-                <div>
+                <div className="text-center md:text-left">
                   <div className="text-2xl md:text-4xl font-serif font-bold text-white">
                     {stat.number}
                   </div>
