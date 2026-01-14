@@ -102,8 +102,7 @@ export const translations = {
     kk: 'TestDaF - Шетел тілі ретінде неміс тілі (деңгей: TDN 4)',
     ru: 'TestDaF - Тест по немецкому языку как иностранному (уровень: TDN 4)',
     en: 'TestDaF - Test of German as a Foreign Language (level: TDN 4)'
-  }
-  // НОВЫЕ ПРОГРАММЫ
+  },
   orhun: {
     kk: 'Orhun - Түркі кеңесінің мүше мемлекеттері арасындағы алмасу бағдарламасы.',
     ru: 'Orhun - Программа обмена между странами-членами Тюркского совета.',
